@@ -1,0 +1,5 @@
+# Built #
+/dist/
+/node_modules/
+
+/data/
