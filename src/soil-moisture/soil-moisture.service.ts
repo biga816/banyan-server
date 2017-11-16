@@ -1,16 +1,19 @@
-import * as fastify from 'fastify'
-import * as fs from 'fs'
-import * as format from 'date-fns/format'
-import * as Rx from 'rx'
+import * as format from 'date-fns/format';
+import * as Rx from 'rx';
 
 import { CONFIG } from './../common/utils/config';
+import { IMoistureData } from './../common/interfaces/moisture-data.interface';
+import { FileService } from './../common/services/file.service';
 
 export class SoilMoistureService {
+  private fileService: FileService;
+
   /**
    * Creates an instance of SoilMoistureService.
    * @memberof SoilMoistureService
    */
   constructor() {
+    this.fileService = new FileService();
   }
 
  /**
@@ -20,29 +23,30 @@ export class SoilMoistureService {
   * @returns {Promise<any>} 
   * @memberof SoilMoistureService
   */
-  saveDataLocal(moisture: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let self = this;
+  public saveDataLocal(soilMoisture: number, moistureData: IMoistureData): Promise<any> {
+    let self = this;
 
+    return new Promise((resolve, reject) => {
       // cal remaining water
-      let moisturePct = Math.round(100 * moisture / CONFIG.MOISTURE.MAX);
+      let moisturePct = Math.round(100 * soilMoisture / CONFIG.MOISTURE.MAX);
       console.log('date : ', format(new Date(), 'YYYY/MM/DD HH:mm'));
       console.log('result : ', moisturePct, '%');  
 
       // read data
-      let statusObj = JSON.parse(fs.readFileSync(CONFIG.PATH.BANYAN_STATUS).toString());
       let today = format(new Date(), 'YYYY/MM/DD HH:mm:ss');
-      let preMoisturePct = statusObj['moisturePct'];
+      let preMoisturePct = moistureData.moisturePct;
 
       // set params
-      statusObj['moisture'] = moisture;
-      statusObj['moisturePct'] = moisturePct;
-      statusObj['updateDate'] = today;
-      statusObj['lastWateredDate'] = preMoisturePct + 10 < moisturePct? today : statusObj['lastWateredDate'];
+      let newMoistureData: IMoistureData = {
+        moisture: soilMoisture,
+        moisturePct: moisturePct,
+        updateDate: today,
+        lastWateredDate: preMoisturePct + 10 < moisturePct? today : moistureData.lastWateredDate
+      };
 
       // set observable
       var source = Rx.Observable.fromPromise(
-        self.outputJson(statusObj).then(
+        self.fileService.outputJson(CONFIG.PATH.MOISTURE_DATA, newMoistureData).then(
           (data) => { return data; },
           (err) => { return err; }
         )
@@ -51,29 +55,12 @@ export class SoilMoistureService {
       // save data
       source.subscribe(
         (res) => resolve(),
-        (err) => reject(new Error(err))
+        (err) => {
+          console.log(err);
+          reject(new Error(err));
+        }
       );
     });
   };
  
- /**
-  * Output json file
-  * 
-  * @param {object} obj 
-  * @returns {Promise<any>} 
-  * @memberof SoilMoistureService
-  */
-  outputJson(obj: object): Promise<any> {
-		return new Promise((resolve, reject) => {
-			fs.writeFile(CONFIG.PATH.BANYAN_STATUS, JSON.stringify(obj, null, '    '), (err) => {
-				if (err) {
-					reject(err);
-				} else {
-					console.log('Outputted json　successfully.');
-					resolve();
-				}
-			});
-		});
-  }
-
 }

@@ -1,5 +1,6 @@
 import * as fastify from 'fastify'
 import * as cors from 'cors'
+import * as dotenv from 'dotenv';
 
 import { Router } from './router';
 
@@ -13,6 +14,7 @@ class REST {
   init() {
     // set fastify setting
     server.use(cors());
+    dotenv.config();
     // server.decorate('conf', CONFIG);
 
     // set routes

@@ -1,8 +1,9 @@
-import { getOptions, postOptions} from './soil-moisture.options';
-import { SoilMoistureService } from './soil-moisture.service';
+import * as fs from 'fs';
 
-// common
+import { SoilMoistureService } from './soil-moisture.service';
 import { IResponse } from '../common/interfaces/response.interface';
+import { IMoistureData } from '../common/interfaces/moisture-data.interface';
+import { CONFIG } from './../common/utils/config';
 
 /**
  * SoilMoisture Controller
@@ -22,15 +23,14 @@ export class SoilMoistureController {
    * @returns {Promise<IResponse>} 
    * @memberof SoilMoistureController
    */
-  async get(req: any, reply: any): Promise<IResponse> {
-    const msg = "GET success:)";
-    console.log(msg);
+  public async getSoilMoistureHandler(req: any, reply: any): Promise<IResponse> {
+    console.log("GET success:)");
     reply.header('Content-Type', 'application/json').code(200);
 
     return {
       "status": "00000",
       "message": "",
-      "data": [msg],
+      "data": [],
     };
   }
 
@@ -42,9 +42,12 @@ export class SoilMoistureController {
    * @returns {Promise<IResponse>} 
    * @memberof SoilMoistureController
    */
-  async post(req: any, reply: any): Promise<IResponse> {
+  public async postSoilMoistureHandler(req: any, reply: any): Promise<IResponse> {
     let soilMoistureService = new SoilMoistureService();
-    await soilMoistureService.saveDataLocal(req.body.soilMoisture);
+
+    // read data
+    let moistureData: IMoistureData = JSON.parse(fs.readFileSync(CONFIG.PATH.MOISTURE_DATA).toString());      
+    await soilMoistureService.saveDataLocal(req.body.soilMoisture, moistureData);
 
     // set header
     reply.header('Content-Type', 'application/json').code(200);
