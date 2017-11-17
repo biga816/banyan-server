@@ -17,6 +17,12 @@ import { IBanyanStatus } from '../common/interfaces/banyan-status.interface';
 // services
 import { FileService } from './../common/services/file.service';
 
+/**
+ * DataProcessing Service
+ * 
+ * @export
+ * @class DataProcessingService
+ */
 export class DataProcessingService {
   private fileService: FileService;
   private smtpConfig: object = {
@@ -93,23 +99,23 @@ export class DataProcessingService {
   public sendMail(subject: string, text: string): Promise<any> {
     let self = this;
 
-		return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       let transporter = mailer.createTransport(transport(self.smtpConfig));
 
-			transporter.sendMail({
-				from: self.mailFrom,
-				to: self.mailTos,
-				subject: subject,
-				text: text
-			},  (err, info) => {
-				if (err) {
+      transporter.sendMail({
+        from: self.mailFrom,
+        to: self.mailTos,
+        subject: subject,
+        text: text
+      },  (err, info) => {
+        if (err) {
           console.log(err);
-					reject(new Error(err));
-				} else {
-					console.log('Sent mail successfully.');
-					resolve();
-				};
-			});
+          reject(new Error(err));
+        } else {
+          console.log('Sent mail successfully.');
+          resolve();
+        };
+      });
     });    
   }
 

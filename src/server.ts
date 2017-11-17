@@ -6,16 +6,20 @@ import { Router } from './router';
 
 const server = fastify();
 
+/**
+ * REST
+ * 
+ * @class REST
+ */
 class REST {
   constructor() {
     this.init();
   }
 
-  init() {
+  public init(): void {
     // set fastify setting
     server.use(cors());
     dotenv.config();
-    // server.decorate('conf', CONFIG);
 
     // set routes
     Router(server);

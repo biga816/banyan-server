@@ -3,6 +3,12 @@ import * as fs from 'fs';
 import { CONFIG } from './../utils/config';
 import { IMoistureData } from '../interfaces/moisture-data.interface';
 
+/**
+ * File Service
+ * 
+ * @export
+ * @class FileService
+ */
 export class FileService {
   /**
    * Creates an instance of FileService.

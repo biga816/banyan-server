@@ -1,4 +1,5 @@
 // libs
+import * as fastify from 'fastify';
 import * as fs from 'fs';
 
 // services
@@ -14,6 +15,9 @@ import { CONFIG } from './../common/utils/config';
 
 /**
  * DataProcessing Controller
+ * 
+ * @export
+ * @class DataProcessingController
  */
 export class DataProcessingController {
   /**
@@ -25,12 +29,12 @@ export class DataProcessingController {
   /**
    * 
    * 
-   * @param {*} req 
-   * @param {*} reply 
+   * @param {fastify.FastifyRequest} req 
+   * @param {fastify.FastifyReply} reply 
    * @returns {Promise<IResponse>} 
    * @memberof DataProcessingController
    */
-  public async getDataProcessingHandler(req: any, reply: any): Promise<IResponse> {
+  public async getDataProcessingHandler(req: fastify.FastifyRequest, reply: fastify.FastifyReply): Promise<IResponse> {
     let targetDate = req.query.date;
     let dataProcessingService = new DataProcessingService();
 

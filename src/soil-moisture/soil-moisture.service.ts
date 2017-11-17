@@ -5,6 +5,12 @@ import { CONFIG } from './../common/utils/config';
 import { IMoistureData } from './../common/interfaces/moisture-data.interface';
 import { FileService } from './../common/services/file.service';
 
+/**
+ * SoilMoisture Service
+ * 
+ * @export
+ * @class SoilMoistureService
+ */
 export class SoilMoistureService {
   private fileService: FileService;
 

@@ -1,12 +1,22 @@
+// libs
+import * as fastify from 'fastify';
 import * as fs from 'fs';
 
+// services
 import { SoilMoistureService } from './soil-moisture.service';
+
+// interfaces
 import { IResponse } from '../common/interfaces/response.interface';
 import { IMoistureData } from '../common/interfaces/moisture-data.interface';
+
+// utils
 import { CONFIG } from './../common/utils/config';
 
 /**
  * SoilMoisture Controller
+ * 
+ * @export
+ * @class SoilMoistureController
  */
 export class SoilMoistureController {
   /**
@@ -18,12 +28,12 @@ export class SoilMoistureController {
   /**
    * 
    * 
-   * @param {*} req 
-   * @param {*} reply 
+   * @param {fastify.FastifyRequest} req 
+   * @param {fastify.FastifyReply} reply 
    * @returns {Promise<IResponse>} 
    * @memberof SoilMoistureController
    */
-  public async getSoilMoistureHandler(req: any, reply: any): Promise<IResponse> {
+  public async getSoilMoistureHandler(req: fastify.FastifyRequest, reply: fastify.FastifyReply): Promise<IResponse> {
     console.log("GET success:)");
     reply.header('Content-Type', 'application/json').code(200);
 
@@ -37,12 +47,12 @@ export class SoilMoistureController {
   /**
    * 
    * 
-   * @param {*} req 
-   * @param {*} reply 
+   * @param {fastify.FastifyRequest} req 
+   * @param {fastify.FastifyReply} reply 
    * @returns {Promise<IResponse>} 
    * @memberof SoilMoistureController
    */
-  public async postSoilMoistureHandler(req: any, reply: any): Promise<IResponse> {
+  public async postSoilMoistureHandler(req: fastify.FastifyRequest, reply: fastify.FastifyReply): Promise<IResponse> {
     let soilMoistureService = new SoilMoistureService();
 
     // read data
