@@ -31,28 +31,32 @@ export class DataProcessingController {
    * @memberof DataProcessingController
    */
   public async getDataProcessingHandler(req: any, reply: any): Promise<IResponse> {
+    let targetDate = req.query.date;
     let dataProcessingService = new DataProcessingService();
 
-    // read data
+    // read local data
     let moistureData: IMoistureData = JSON.parse(fs.readFileSync(CONFIG.PATH.MOISTURE_DATA).toString());
     let banyanStatus: IBanyanStatus = JSON.parse(fs.readFileSync(CONFIG.PATH.BANYAN_STATUS).toString());
 
     // get status
-    let processingStatus = dataProcessingService.getProcessingStatus(moistureData, banyanStatus);
+    let processingStatus = dataProcessingService.getProcessingStatus(targetDate, moistureData, banyanStatus);
 
+    // send mail
     if (processingStatus != 0) {
-      // send mail
       let subject = CONFIG.MAIL.SUBJECT[processingStatus];
       let text = CONFIG.MAIL.TEXT[processingStatus];  
       await dataProcessingService.sendMail(subject, text);
-
-      // update banayan status
-      await dataProcessingService.updateBanayanStatus(moistureData, banyanStatus, processingStatus);
     }
 
-    // set respons info
+    // update banayan status
+    await dataProcessingService.updateBanayanStatus(moistureData, banyanStatus, processingStatus);
+    // save Data to Firebase
+    await dataProcessingService.saveDataFb(targetDate, moistureData, banyanStatus);
+      
+    // set header
     reply.header('Content-Type', 'application/json').code(200);
 
+    // return response
     return {
       "status": "00000",
       "message": ""
