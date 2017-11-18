@@ -56,8 +56,11 @@ export class SoilMoistureController {
     let soilMoistureService = new SoilMoistureService();
 
     // read data
-    let moistureData: IMoistureData = JSON.parse(fs.readFileSync(CONFIG.PATH.MOISTURE_DATA).toString());      
+    let moistureData: IMoistureData = JSON.parse(fs.readFileSync(CONFIG.PATH.MOISTURE_DATA).toString());
     await soilMoistureService.saveDataLocal(req.body.soilMoisture, moistureData);
+
+    // send mail
+    await soilMoistureService.sendWateredMail(req.body.soilMoisture, moistureData);
 
     // set header
     reply.header('Content-Type', 'application/json').code(200);

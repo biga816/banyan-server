@@ -4,6 +4,7 @@ import * as fs from 'fs';
 
 // services
 import { DataProcessingService } from './data-processing.service';
+import { MailService } from './../common/services/mail.service';
 
 // interfaces
 import { IResponse } from '../common/interfaces/response.interface';
@@ -37,21 +38,17 @@ export class DataProcessingController {
   public async getDataProcessingHandler(req: fastify.FastifyRequest, reply: fastify.FastifyReply): Promise<IResponse> {
     let targetDate = req.query.date;
     let dataProcessingService = new DataProcessingService();
+    let mailService = new MailService();
 
     // read local data
     let moistureData: IMoistureData = JSON.parse(fs.readFileSync(CONFIG.PATH.MOISTURE_DATA).toString());
     let banyanStatus: IBanyanStatus = JSON.parse(fs.readFileSync(CONFIG.PATH.BANYAN_STATUS).toString());
 
     // get status
-    let processingStatus = dataProcessingService.getProcessingStatus(targetDate, moistureData, banyanStatus);
+    let processingStatus = dataProcessingService.getProcessingStatus(moistureData, banyanStatus);
 
     // send mail
-    if (processingStatus != 0) {
-      let subject = CONFIG.MAIL.SUBJECT[processingStatus];
-      let text = CONFIG.MAIL.TEXT[processingStatus];  
-      await dataProcessingService.sendMail(subject, text);
-    }
-
+    await dataProcessingService.sendStatusMail(processingStatus);
     // update banayan status
     await dataProcessingService.updateBanayanStatus(moistureData, banyanStatus, processingStatus);
     // save Data to Firebase
