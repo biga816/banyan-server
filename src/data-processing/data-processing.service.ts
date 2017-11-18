@@ -38,12 +38,6 @@ export class DataProcessingService {
   private mailTos: string[] = [process.env.MAIL_TO1];
   private firebaseUserId: string = process.env.FIREBASE_USER_ID;
   private firebaseUserPassword: string = process.env.FIREBASE_USER_PASS;
-  private firebaseConfig: object = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    projectId: process.env.FIREBASE_PROJECT_ID
-  };
 
   /**
    * Creates an instance of DataProcessingService.
@@ -51,7 +45,6 @@ export class DataProcessingService {
    */
   constructor() {
     this.fileService = new FileService();
-    firebase.initializeApp(this.firebaseConfig);
   }
 
   /**
