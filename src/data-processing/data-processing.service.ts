@@ -76,7 +76,7 @@ export class DataProcessingService {
   public async updateBanayanStatus(moistureData: IMoistureData, banyanStatus: IBanyanStatus, processingStatus: number) {
     // set params
     let newBanyanStatus: IBanyanStatus = {
-      moisturePct: moistureData.moisture,
+      moisturePct: moistureData.moisturePct,
       status: processingStatus === 0 ? banyanStatus.status || 0 : processingStatus,
       updateDate: format(new Date(), 'YYYY/MM/DD HH:mm:ss'),
       lastWateredDate: moistureData.lastWateredDate
